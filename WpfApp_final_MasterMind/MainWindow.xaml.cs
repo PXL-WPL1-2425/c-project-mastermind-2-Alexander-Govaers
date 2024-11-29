@@ -33,7 +33,7 @@ namespace WpfApp1_final_MasterMind
 
         int attempts;
         //start van het spel 100 punten
-        // int points = 100;
+        int points = 100;
 
         int row = 0;
 
@@ -49,7 +49,7 @@ namespace WpfApp1_final_MasterMind
 
             GenerateNumbers();
 
-            //pointslabel.Content = $"Jouw huidige score: {points}/100";
+            pointslabel.Content = $"Jouw huidige score: {points}/100";
             solutionTextBox.Visibility = Visibility.Hidden;
 
 
@@ -185,6 +185,7 @@ namespace WpfApp1_final_MasterMind
             attempts++;
             UpdateTitle();
             Historiek();
+            pointslabel.Content = $"Jouw huidige score: {points}/100";
 
             // messagebox einde spel commit 06 - pogingen + commit 09 -  spel einde
             if (attempts > 10)
@@ -238,13 +239,13 @@ namespace WpfApp1_final_MasterMind
             else if (solutionTextBox.Text.Contains(input.Text) && input.Text != "")
             {
                 kleurLabel.BorderBrush = Brushes.Wheat;
-                //points -= 1;
+                points -= 1;
                 kleurLabel.BorderThickness = new Thickness(4);
             }
             else
             {
                 kleurLabel.BorderThickness = new Thickness(0);
-                // points -= 2;
+                 points -= 2;
             }
 
         }
