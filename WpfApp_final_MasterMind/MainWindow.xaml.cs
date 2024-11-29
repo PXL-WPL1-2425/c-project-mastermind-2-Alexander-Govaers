@@ -27,27 +27,23 @@ namespace WpfApp1_final_MasterMind
         //random nummer genereren
         Random rnd = new Random();
         //kleuren doorheen de code gebruiken
-        string kleur1, kleur2, kleur3, kleur4;
+
+
+        string[] kleuren = new string[4];
 
         int attempts;
         //start van het spel 100 punten
-       // int points = 100;
+        // int points = 100;
 
+        int row = 0;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            
-
 
         }
-        /// <summary>
-        /// 
-        /// <para> Deze methode beschikt over GenerateNumbers() method die ervoor zorgt dat..... </para>
-        /// </summary>
-        /// <param name="sender"> Bechrijving sender....</param>
-        /// <param name="e"></param>
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
 
@@ -61,12 +57,13 @@ namespace WpfApp1_final_MasterMind
 
         private void GenerateNumbers()
         {
-            kleur1 = ChooseColor(rnd.Next(0, 6));
-            kleur2 = ChooseColor(rnd.Next(0, 6));
-            kleur3 = ChooseColor(rnd.Next(0, 6));
-            kleur4 = ChooseColor(rnd.Next(0, 6));
 
-            solutionTextBox.Text = $"MasterMind: {kleur1}, {kleur2}, {kleur3}, {kleur4}";
+            kleuren[0] = ChooseColor(rnd.Next(0, 6));
+            kleuren[1] = ChooseColor(rnd.Next(0, 6));
+            kleuren[2] = ChooseColor(rnd.Next(0, 6));
+            kleuren[3] = ChooseColor(rnd.Next(0, 6));
+
+            solutionTextBox.Text = $"MasterMind: {kleuren[0]}, {kleuren[1]}, {kleuren[2]}, {kleuren[3]}";
         }
         /// <summary>
         /// Via deze method wordt er een kleur gegeven aan het random nummer
@@ -159,12 +156,10 @@ namespace WpfApp1_final_MasterMind
                     return Brushes.White;
 
 
-
-
             }
         }
 
- 
+
         // solution-show f9
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
@@ -186,13 +181,13 @@ namespace WpfApp1_final_MasterMind
             LabelChanged(label3, 2, comboBox3);
             LabelChanged(label4, 3, comboBox4);
 
-            
+
             attempts++;
             UpdateTitle();
-
+            Historiek();
 
             // messagebox einde spel commit 06 - pogingen + commit 09 -  spel einde
-            if (attempts >= 10)
+            if (attempts > 10)
             {
                 this.Close();
             }
@@ -210,23 +205,23 @@ namespace WpfApp1_final_MasterMind
 
         {
             string oplossing;
-            
+
 
             switch (positie)
             {
                 case 0:
-                    oplossing = kleur1;
+                    oplossing = kleuren[0];
                     break;
 
                 case 1:
-                    oplossing = kleur2;
+                    oplossing = kleuren[1];
                     break;
 
                 case 2:
-                    oplossing = kleur3;
+                    oplossing = kleuren[2];
                     break;
                 case 3:
-                    oplossing = kleur4;
+                    oplossing = kleuren[3];
                     break;
                 default:
                     oplossing = "error";
@@ -249,8 +244,65 @@ namespace WpfApp1_final_MasterMind
             else
             {
                 kleurLabel.BorderThickness = new Thickness(0);
-               // points -= 2;
+                // points -= 2;
             }
+
+        }
+        private void Historiek()
+        {
+
+            RowDefinition newRow = new RowDefinition();
+            newRow.Height = GridLength.Auto;
+            historiekgrid.RowDefinitions.Add(newRow);
+
+
+            Label historiekLabel1 = new Label();
+            historiekLabel1.Height = 50;
+            historiekLabel1.Width = 50;
+            historiekLabel1.Margin = new Thickness(2);
+            historiekLabel1.Background = label1.Background;
+            historiekLabel1.BorderBrush = label1.BorderBrush;
+            historiekLabel1.BorderThickness = label1.BorderThickness;
+
+            Grid.SetRow(historiekLabel1, row);
+            Grid.SetColumn(historiekLabel1, 0);
+
+            Label historiekLabel2 = new Label();
+            historiekLabel2.Height = 50;
+            historiekLabel2.Width = 50;
+            historiekLabel2.Margin = new Thickness(2);
+            historiekLabel2.Background = label2.Background;
+            historiekLabel2.BorderBrush = label2.BorderBrush;
+            historiekLabel2.BorderThickness = label2.BorderThickness;
+            Grid.SetRow(historiekLabel2, row);
+            Grid.SetColumn(historiekLabel2, 1);
+
+            Label historiekLabel3 = new Label();
+            historiekLabel3.Height = 50;
+            historiekLabel3.Width = 50;
+            historiekLabel2.Margin = new Thickness(2);
+            historiekLabel3.Background = label3.Background;
+            historiekLabel3.BorderBrush = label3.BorderBrush;
+            historiekLabel3.BorderThickness = label3.BorderThickness;
+            Grid.SetRow(historiekLabel3, row);
+            Grid.SetColumn(historiekLabel3, 2);
+
+            Label historiekLabel4 = new Label();
+            historiekLabel4.Height = 50;
+            historiekLabel4.Width = 50;
+            historiekLabel2.Margin = new Thickness(2);
+            historiekLabel4.Background = label4.Background;
+            historiekLabel4.BorderBrush = label4.BorderBrush;
+            historiekLabel4.BorderThickness = label4.BorderThickness;
+            Grid.SetRow(historiekLabel4, row);
+            Grid.SetColumn(historiekLabel4, 3);
+
+            historiekgrid.Children.Add(historiekLabel1);
+            historiekgrid.Children.Add(historiekLabel2);
+            historiekgrid.Children.Add(historiekLabel3);
+            historiekgrid.Children.Add(historiekLabel4);
+
+            row++;
 
 
         }
