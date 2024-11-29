@@ -181,16 +181,45 @@ namespace WpfApp1_final_MasterMind
             LabelChanged(label3, 2, comboBox3);
             LabelChanged(label4, 3, comboBox4);
 
-
+            
             attempts++;
             UpdateTitle();
             Historiek();
             pointslabel.Content = $"Jouw huidige score: {points}/100";
 
             // messagebox einde spel commit 06 - pogingen + commit 09 -  spel einde
-            if (attempts > 10)
+       
+            if (attempts >= 10)
             {
-                this.Close();
+                MessageBoxResult result = MessageBox.Show($"You Failed!" +
+                 $" De juiste kleurencombinatie: {kleuren[0]}, {kleuren[1]}, {kleuren[2]}, {kleuren[3]}  \r\n " +
+                 $"Wil je opnieuw proberen?",
+                 "Play Again?",
+                 MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    points = 100;
+                    attempts = 0;
+                    UpdateTitle();
+                    GenerateNumbers();
+                    comboBox1.Text = "";
+                    label1.BorderThickness = new Thickness(0);
+                    comboBox2.Text = "";
+                    label2.BorderThickness = new Thickness(0);
+                    comboBox3.Text = "";
+                    label3.BorderThickness = new Thickness(0);
+                    comboBox4.Text = "";
+                    label4.BorderThickness = new Thickness(0);
+                    historiekgrid.Children.Clear();
+                    pointslabel.Content = $"Jouw huidige score: {points}/100";
+
+
+                }
+                else
+                {
+                    this.Close();
+                }
             }
 
         }
@@ -198,6 +227,7 @@ namespace WpfApp1_final_MasterMind
         {
 
             this.Title = $"Mastermind: {attempts} pogingen ondernomen";
+            
 
         }
 
