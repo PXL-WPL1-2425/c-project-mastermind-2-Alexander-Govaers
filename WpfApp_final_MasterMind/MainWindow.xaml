@@ -61,7 +61,7 @@
         <Label x:Name="label4"  Grid.Column="3" Grid.Row="1"/>
 
         <Button x:Name="checkButton" Content="Check Code" Grid.Row="3" Grid.ColumnSpan="4" Click="checkButton_Click" FontWeight="Bold" Margin="109,36,109,4" Grid.RowSpan="2"/>
-        <TextBox x:Name="solutionTextBox" BorderThickness="2" HorizontalAlignment="Left" Grid.Row="3" TextWrapping="Wrap" VerticalAlignment="Center" Width="180" Height="17" FontSize="9" Visibility="Visible" FontWeight="Bold" Grid.ColumnSpan="2" Margin="117,0,0,0"/>
+        <TextBox x:Name="solutionTextBox" BorderThickness="2" Grid.Row="3" TextWrapping="Wrap" VerticalAlignment="Center" Width="160" Height="30" FontSize="9" Visibility="Visible" FontWeight="Bold" Grid.ColumnSpan="2" Margin="117,0,0,0" HorizontalAlignment="Center"/>
         <Label x:Name="pointslabel" Grid.Column="2" Grid.Row="3" HorizontalContentAlignment="Center" Margin="11,5,118,9" Background="#FFDCD0D0" Grid.ColumnSpan="2" />
         <Grid x:Name="historiekgrid" Grid.ColumnSpan="4" Grid.Row="2" Margin="0,5,0,0">
 

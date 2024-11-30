@@ -125,8 +125,6 @@ namespace WpfApp1_final_MasterMind
             }
 
         }
-
-
         private Brush GetColorFromIndex(int selectedIndex)
         {
 
@@ -186,8 +184,11 @@ namespace WpfApp1_final_MasterMind
             UpdateTitle();
             Historiek();
             pointslabel.Content = $"Jouw huidige score: {points}/100";
+            HasWon();
 
             // messagebox einde spel commit 06 - pogingen + commit 09 -  spel einde
+
+            
        
             if (attempts >= 10)
             {
@@ -228,11 +229,8 @@ namespace WpfApp1_final_MasterMind
 
             this.Title = $"Mastermind: {attempts} pogingen ondernomen";
             
-
         }
-
         private void LabelChanged(Label kleurLabel, int positie, ComboBox input)
-
 
         {
             string oplossing;
@@ -281,11 +279,9 @@ namespace WpfApp1_final_MasterMind
         }
         private void Historiek()
         {
-
             RowDefinition newRow = new RowDefinition();
             newRow.Height = GridLength.Auto;
             historiekgrid.RowDefinitions.Add(newRow);
-
 
             Label historiekLabel1 = new Label();
             historiekLabel1.Height = 50;
@@ -335,7 +331,47 @@ namespace WpfApp1_final_MasterMind
 
             row++;
 
+        }
+
+        private void HasWon()
+        {
+            if (label1.BorderBrush == Brushes.DarkRed && label2.BorderBrush == Brushes.DarkRed && label3.BorderBrush == Brushes.DarkRed && label4.BorderBrush == Brushes.DarkRed)
+            {
+
+
+                MessageBoxResult result = MessageBox.Show($"Je hebt gewonnen in {attempts}!" +
+                    " \r\n Wil je opnieuw proberen?", "WINNER!", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    points = 100;
+                    attempts = 0;
+                    UpdateTitle();
+                    GenerateNumbers();
+                    comboBox1.Text = "";
+                    label1.BorderThickness = new Thickness(0);
+                    comboBox2.Text = "";
+                    label2.BorderThickness = new Thickness(0);
+                    comboBox3.Text = "";
+                    label3.BorderThickness = new Thickness(0);
+                    comboBox4.Text = "";
+                    label4.BorderThickness = new Thickness(0);
+                    historiekgrid.Children.Clear();
+                    pointslabel.Content = $"Jouw huidige score: {points}/100";
+
+
+                }
+                else
+                {
+                    this.Close();
+                }
+            }
 
         }
+
+            
+
+        } 
     }
-}
+
