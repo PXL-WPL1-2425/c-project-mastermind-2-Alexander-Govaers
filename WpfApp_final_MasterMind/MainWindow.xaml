@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1_final_MasterMind"
         mc:Ignorable="d"
-     Title="MasterMind" Height="795" Width="600" Loaded="Window_Loaded"  KeyDown="Window_KeyDown">
+     Title="MasterMind" Height="795" Width="600" Loaded="Window_Loaded"  KeyDown="Window_KeyDown" Closing="Window_Closing_1">
 
     <Grid RenderTransformOrigin="0.497,0.52">
         <Grid.ColumnDefinitions>

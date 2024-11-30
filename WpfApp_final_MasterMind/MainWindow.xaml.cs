@@ -179,17 +179,17 @@ namespace WpfApp1_final_MasterMind
             LabelChanged(label3, 2, comboBox3);
             LabelChanged(label4, 3, comboBox4);
 
-            
+
             attempts++;
             UpdateTitle();
             Historiek();
             pointslabel.Content = $"Jouw huidige score: {points}/100";
             HasWon();
 
-            // messagebox einde spel commit 06 - pogingen + commit 09 -  spel einde
 
-            
-       
+
+
+
             if (attempts >= 10)
             {
                 MessageBoxResult result = MessageBox.Show($"You Failed!" +
@@ -228,7 +228,7 @@ namespace WpfApp1_final_MasterMind
         {
 
             this.Title = $"Mastermind: {attempts} pogingen ondernomen";
-            
+
         }
         private void LabelChanged(Label kleurLabel, int positie, ComboBox input)
 
@@ -273,7 +273,7 @@ namespace WpfApp1_final_MasterMind
             else
             {
                 kleurLabel.BorderThickness = new Thickness(0);
-                 points -= 2;
+                points -= 2;
             }
 
         }
@@ -370,8 +370,23 @@ namespace WpfApp1_final_MasterMind
 
         }
 
-            
+        private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            MessageBoxResult reply = MessageBox.Show("Ben je zeker dat je wilt afsluiten?", $"Mastermind: {attempts}/10 pogingen ondernomen", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-        } 
+            if (reply == MessageBoxResult.Yes)
+            {
+                e.Cancel = false;
+
+            }
+            else
+            {
+                e.Cancel = true;
+            }
+        }
+
+
+
     }
+}
 
