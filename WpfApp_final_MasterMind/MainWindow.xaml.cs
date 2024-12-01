@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -26,9 +28,8 @@ namespace WpfApp1_final_MasterMind
     {
         //random nummer genereren
         Random rnd = new Random();
+
         //kleuren doorheen de code gebruiken
-
-
         string[] kleuren = new string[4];
 
         int attempts;
@@ -37,25 +38,75 @@ namespace WpfApp1_final_MasterMind
 
         int row = 0;
 
+        // timer instellen
+        DispatcherTimer timer = new DispatcherTimer();
+        DateTime clicked;
+        TimeSpan elapsedTime;
+        bool timerStarted = false;
+
+        bool endGame = false;
+
         public MainWindow()
         {
             InitializeComponent();
 
 
+
         }
 
+        /// <summary>
+        /// Zorgt voor een tick-event van de timer, bijgehouden tijd en pogingen worden geüpdatet.
+        /// </summary>
+        /// <param name="sender">De timer die het Tick-event heeft getriggerd.</param>
+        /// <param name="e">De starten van het event</param>
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            elapsedTime = DateTime.Now - clicked;
+            timerTextBlock.Text = elapsedTime.TotalSeconds.ToString("N3");
+
+            if (elapsedTime.TotalSeconds >= 10)
+            {
+                attempts++;
+
+                if (attempts >= 10)
+                {
+                    
+                    timer.Stop();
+                    timerTextBlock.Text = "" ;
+                    checkButton_Click(null, null);
+                    return;
+                    
+                }
+
+                timer.Stop();
+                clicked = DateTime.Now;
+                timer.Start();
+
+            }
+
+
+            this.Title = $"Mastermind: {attempts} pogingen ondernomen";
+
+        }
+        /// <summary>
+        /// Wanneer de window ingeladen word, worden de willekeurige nummers aangemaakt en de score aangemaakt.
+        /// </summary>
+        /// <param name="sender">Het venster dat wordt ingeladen</param>
+        /// <param name="e">Het laden van u venster</param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
 
-            GenerateNumbers();
+            GenerateRandomColors();
 
             pointslabel.Content = $"Jouw huidige score: {points}/100";
             solutionTextBox.Visibility = Visibility.Hidden;
 
 
         }
-
-        private void GenerateNumbers()
+        /// <summary>
+        /// Deze method maakt willerkeurige kleuren
+        /// </summary>
+        private void GenerateRandomColors()
         {
 
             kleuren[0] = ChooseColor(rnd.Next(0, 6));
@@ -66,10 +117,10 @@ namespace WpfApp1_final_MasterMind
             solutionTextBox.Text = $"MasterMind: {kleuren[0]}, {kleuren[1]}, {kleuren[2]}, {kleuren[3]}";
         }
         /// <summary>
-        /// Via deze method wordt er een kleur gegeven aan het random nummer
+        /// Via deze method wordt er een stringnaam geven aan de indexnummer.
         /// </summary>
-        /// <param name="willekeurigNummer">Geeft een willekeurig nummer mee</param>
-        /// <returns>Een kleurnaam adhv willekeurig nummer</returns>
+        /// <param name="willekeurigNummer">Het willekeurig nummer dat gegenereerd word tussen 0-5</param>
+        /// <returns>Een string die een kleurnaam geeft aan het willekeurig nummer</returns>
         private string ChooseColor(int willekeurigNummer)
         {
             if (willekeurigNummer == 0)
@@ -101,7 +152,11 @@ namespace WpfApp1_final_MasterMind
                 return "ERROR";
             }
         }
-
+        /// <summary>
+        /// Verandert de achtergrondkleur van een label op basis van de selectie in een ComboBox. 
+        /// </summary>
+        /// <param name="sender"> De combobox waaraan een aanpassing gedaan wordt</param>
+        /// <param name="e">De selectie van de keuze van de combobox</param>
         private void colorChange(object sender, SelectionChangedEventArgs e)
         {
 
@@ -125,6 +180,11 @@ namespace WpfApp1_final_MasterMind
             }
 
         }
+        /// <summary>
+        /// De method linkt een indexnummer aan een kleur.
+        /// </summary>
+        /// <param name="selectedIndex">Het indexnummer van het geselecteerde item van de combobox</param>
+        /// <returns>Een kleur</returns>
         private Brush GetColorFromIndex(int selectedIndex)
         {
 
@@ -151,14 +211,18 @@ namespace WpfApp1_final_MasterMind
                     return Brushes.Blue;
 
                 default:
-                    return Brushes.White;
+                    return Brushes.Transparent;
 
 
             }
         }
 
 
-        // solution-show f9
+       /// <summary>
+       /// Keydown event voor de oplossing te tonen (f9)
+       /// </summary>
+       /// <param name="sender">de f9 toest</param>
+       /// <param name="e">tonen van de oplossing</param>
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.F9 && solutionTextBox.Visibility == Visibility.Visible)
@@ -170,7 +234,12 @@ namespace WpfApp1_final_MasterMind
                 solutionTextBox.Visibility = Visibility.Visible;
             }
         }
-
+        /// <summary>
+        /// De labels gecontroleerd, de timer opgestart, de pogingen verhoogd en een historiek bijgehouden.
+        /// <para>In de if statement wordt er gekeken als de pogingen niet overschreden worden en bij elke klik verhoogt. Indien de speler verliest wordt er een messagebox getoont</para>
+        /// </summary>
+        /// <param name="sender">De button knop</param>
+        /// <param name="e">het klik event van de knop</param>
         private void checkButton_Click(object sender, RoutedEventArgs e)
         {
 
@@ -180,18 +249,18 @@ namespace WpfApp1_final_MasterMind
             LabelChanged(label4, 3, comboBox4);
 
 
+           // TimerMethod();
             attempts++;
             UpdateTitle();
             Historiek();
             pointslabel.Content = $"Jouw huidige score: {points}/100";
             HasWon();
 
-
-
-
-
             if (attempts >= 10)
             {
+                
+                timer.Stop();
+                timerTextBlock.Text = "";
                 MessageBoxResult result = MessageBox.Show($"You Failed!" +
                  $" De juiste kleurencombinatie: {kleuren[0]}, {kleuren[1]}, {kleuren[2]}, {kleuren[3]}  \r\n " +
                  $"Wil je opnieuw proberen?",
@@ -200,36 +269,33 @@ namespace WpfApp1_final_MasterMind
 
                 if (result == MessageBoxResult.Yes)
                 {
-                    points = 100;
-                    attempts = 0;
-                    UpdateTitle();
-                    GenerateNumbers();
-                    comboBox1.Text = "";
-                    label1.BorderThickness = new Thickness(0);
-                    comboBox2.Text = "";
-                    label2.BorderThickness = new Thickness(0);
-                    comboBox3.Text = "";
-                    label3.BorderThickness = new Thickness(0);
-                    comboBox4.Text = "";
-                    label4.BorderThickness = new Thickness(0);
-                    historiekgrid.Children.Clear();
-                    pointslabel.Content = $"Jouw huidige score: {points}/100";
-
-
+                    ResetGame();
                 }
                 else
                 {
-                    this.Close();
+                    endGame = true;
+                    Close();
                 }
             }
 
         }
+        /// <summary>
+        /// In de titel worden de pogingen getoont
+        /// </summary>
         private void UpdateTitle()
         {
 
             this.Title = $"Mastermind: {attempts} pogingen ondernomen";
 
         }
+
+        /// <summary>
+        /// Controleert de spelers invoer en past de kleur van het label aan op en vergelijkt deze met de oplossing.
+        /// <para>Er wordt gecontroleerd en daarbij wordt de kleurrand van het label aangepast</para>
+        /// </summary>
+        /// <param name="kleurLabel">Het label dat wordt aangepast.</param>
+        /// <param name="positie">De positie van de oplossing in de kleurenarray.</param>
+        /// <param name="input">De keuze van de speler.</param>
         private void LabelChanged(Label kleurLabel, int positie, ComboBox input)
 
         {
@@ -277,6 +343,9 @@ namespace WpfApp1_final_MasterMind
             }
 
         }
+        /// <summary>
+        /// Voegt een nieuwe rij toe aan het historiekgrid met labels en de randen worden aangepast volgens de keuze van de speler .
+        /// </summary>
         private void Historiek()
         {
             RowDefinition newRow = new RowDefinition();
@@ -333,6 +402,9 @@ namespace WpfApp1_final_MasterMind
 
         }
 
+        /// <summary>
+        /// Controleert of de speler heeft gewonnen. Indien gewonnen, biedt een keuze aan om opnieuw te spelen of te stoppen.
+        /// </summary>
         private void HasWon()
         {
             if (label1.BorderBrush == Brushes.DarkRed && label2.BorderBrush == Brushes.DarkRed && label3.BorderBrush == Brushes.DarkRed && label4.BorderBrush == Brushes.DarkRed)
@@ -345,21 +417,8 @@ namespace WpfApp1_final_MasterMind
 
                 if (result == MessageBoxResult.Yes)
                 {
-                    points = 100;
-                    attempts = 0;
-                    UpdateTitle();
-                    GenerateNumbers();
-                    comboBox1.Text = "";
-                    label1.BorderThickness = new Thickness(0);
-                    comboBox2.Text = "";
-                    label2.BorderThickness = new Thickness(0);
-                    comboBox3.Text = "";
-                    label3.BorderThickness = new Thickness(0);
-                    comboBox4.Text = "";
-                    label4.BorderThickness = new Thickness(0);
-                    historiekgrid.Children.Clear();
-                    pointslabel.Content = $"Jouw huidige score: {points}/100";
 
+                    ResetGame();
 
                 }
                 else
@@ -369,23 +428,80 @@ namespace WpfApp1_final_MasterMind
             }
 
         }
-
+        /// <summary>
+        /// Voert het event uit bij het sluiten van het venster en stelt een vraag aan de gebruiker.
+        /// </summary>
+        /// <param name="sender">Het sluiten van het spel.</param>
+        /// <param name="e">Het afsluit-event.</param>
         private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            timer.Stop();
+
+            if (endGame == true)
+            {
+                e.Cancel = false;
+                return;
+            }
+
             MessageBoxResult reply = MessageBox.Show("Ben je zeker dat je wilt afsluiten?", $"Mastermind: {attempts}/10 pogingen ondernomen", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (reply == MessageBoxResult.Yes)
             {
                 e.Cancel = false;
-
             }
             else
             {
                 e.Cancel = true;
+                timer.Start();
+
             }
         }
 
+        /// <summary>
+        /// De timer opstarten, stoppen en herstarten.
+        /// </summary>
+        private void TimerMethod()
+        {
+            timer.Interval = TimeSpan.FromMilliseconds(1);
+            timer.Tick += Timer_Tick;
 
+            if (timerStarted == false)
+            {
+                clicked = DateTime.Now;
+                timer.Start();
+                timerStarted = true;
+
+            }
+            else
+            {
+                timer.Stop();
+                clicked = DateTime.Now;
+                timer.Start();
+
+            }
+        }
+        /// <summary>
+        /// Reset het spel naar het begin.
+        /// </summary>
+        private void ResetGame()
+        {
+            points = 100;
+            attempts = 0;
+            UpdateTitle();
+            GenerateRandomColors();
+
+            comboBox1.Text = "";
+            label1.BorderThickness = new Thickness(0);
+            comboBox2.Text = "";
+            label2.BorderThickness = new Thickness(0);
+            comboBox3.Text = "";
+            label3.BorderThickness = new Thickness(0);
+            comboBox4.Text = "";
+            label4.BorderThickness = new Thickness(0);
+
+            historiekgrid.Children.Clear();
+            pointslabel.Content = $"Jouw huidige score: {points}/100";
+        }
 
     }
 }
